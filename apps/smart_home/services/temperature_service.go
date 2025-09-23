@@ -37,7 +37,7 @@ func NewTemperatureService(baseURL string) *TemperatureService {
 
 // GetTemperature fetches temperature data for a specific location
 func (s *TemperatureService) GetTemperature(location string) (*TemperatureResponse, error) {
-	url := fmt.Sprintf("%s/temperature?location=%s", s.BaseURL, location)
+	url := fmt.Sprintf("%s/api/v1/temperature?location=%s", s.BaseURL, location)
 
 	resp, err := s.HTTPClient.Get(url)
 	if err != nil {
