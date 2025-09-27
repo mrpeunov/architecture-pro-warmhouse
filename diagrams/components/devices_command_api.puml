@@ -1,0 +1,20 @@
+@startuml
+title DevicesCommandAPI Component Diagram
+
+top to bottom direction
+
+!include <C4/C4_Component>
+
+Container_Boundary(DevicesCommandAPI, "DevicesAPI") {
+  Container(DevicesCommandContainer, "DevicesCommandContainer", "Golang", "Обработка команд пользователя")
+}
+
+Container(DevicesCommandContainer, "Web Application", "Java, Spring") {
+  Component(TelemetryController, "TelemetryController", "Handles telemetries")
+}
+
+ComponentQueue_Ext(DeviceCommandQueue, Очередь команд, Kafka)
+
+Rel(TelemetryController, DeviceCommandQueue, "Отправка команд")
+
+@enduml
