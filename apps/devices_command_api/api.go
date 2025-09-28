@@ -34,7 +34,7 @@ func (h *DeviceHandler) RegisterRoutes(router *gin.RouterGroup) {
 // @Accept json
 // @Produce json
 // @Param device body DeviceCreate true "Device creation data"
-// @Success 201 {object} Command
+// @Success 200 {object} Command
 // @Failure 400 {object} Response
 // @Failure 500 {object} Response
 // @Router /devices [post]

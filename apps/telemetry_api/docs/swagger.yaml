@@ -1,0 +1,134 @@
+basePath: /api/v1
+definitions:
+  models.DeviceResponse:
+    properties:
+      created_at:
+        example: "2023-12-01T10:00:00Z"
+        type: string
+      device_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      device_type:
+        allOf:
+        - $ref: '#/definitions/models.DeviceType'
+        example: sensor
+      home_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      name:
+        example: Living Room Temperature Sensor
+        type: string
+    type: object
+  models.DeviceType:
+    enum:
+    - sensor
+    - lighting
+    type: string
+    x-enum-varnames:
+    - DeviceTypeSensor
+    - DeviceTypeLighting
+  models.ErrorResponse:
+    properties:
+      error:
+        example: Invalid request
+        type: string
+      message:
+        example: The request contains invalid data
+        type: string
+    type: object
+  models.TelemetryResponse:
+    properties:
+      created_at:
+        example: "2023-12-01T10:00:00Z"
+        type: string
+      device_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      telemetry_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      value:
+        example: 22.5
+        type: number
+    type: object
+host: localhost:8083
+info:
+  contact: {}
+  description: Telemetry API for Smart Home System
+  title: TelemetryAPI
+  version: "1.0"
+paths:
+  /devices:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all devices for a specific home
+      parameters:
+      - description: Home ID
+        in: query
+        name: home_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.DeviceResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get devices by home ID
+      tags:
+      - devices
+  /devices/{device_id}/telemetry:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the most recent telemetry data for a specific device
+      parameters:
+      - description: Device ID
+        in: path
+        name: device_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TelemetryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get latest telemetry data by device ID
+      tags:
+      - telemetry
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

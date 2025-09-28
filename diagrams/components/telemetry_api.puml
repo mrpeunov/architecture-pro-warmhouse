@@ -26,9 +26,11 @@ Container(TelemetryAPIContainer, "Web Application", "Golang") {
 
 Component_Ext(WarmHouseProvider, Теплый дом, Golang, Система управления теплыми домами)
 Component_Ext(OtherProvider, Теплый дом, "Golang", Система управления теплыми домами)
+ComponentQueue_Ext(DeviceCommandQueue, Очередь команд, Kafka)
 
 Rel(TelemetryController, TelemetryService, "Вызов бизнеc-логики")
 Rel(TelemetryService, DevicesRepository, "Проверка девайсов")
+Rel(TelemetryService, DeviceCommandQueue, "Телеметрия")
 Rel(TelemetryService, ProviderFactory, "Получение фасада")
 Rel(TelemetryService, WarmHouseFacade, "Получение телеметрии")
 Rel(TelemetryService, OtherProviderFacade, "Получение телеметрии")
