@@ -1,0 +1,147 @@
+basePath: /api/v1
+definitions:
+  main.Command:
+    properties:
+      command_type:
+        allOf:
+        - $ref: '#/definitions/main.CommandType'
+        example: CreateDevice
+      params:
+        additionalProperties:
+          type: string
+        type: object
+    required:
+    - command_type
+    type: object
+  main.CommandType:
+    enum:
+    - CreateDevice
+    - SendAction
+    type: string
+    x-enum-varnames:
+    - CreateDevice
+    - SendAction
+  main.DeviceAction:
+    properties:
+      action:
+        example: turn_on
+        type: string
+      device_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      params:
+        additionalProperties:
+          type: string
+        type: object
+    required:
+    - action
+    - device_id
+    type: object
+  main.DeviceCreate:
+    properties:
+      device_type:
+        allOf:
+        - $ref: '#/definitions/main.DeviceType'
+        example: sensor
+      home_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      name:
+        example: Living Room Temperature Sensor
+        type: string
+    required:
+    - device_type
+    - home_id
+    - name
+    type: object
+  main.DeviceType:
+    enum:
+    - sensor
+    - lighting
+    type: string
+    x-enum-varnames:
+    - DeviceTypeSensor
+    - DeviceTypeLighting
+  main.Response:
+    properties:
+      message:
+        example: Command sent
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  title: Devices Command API
+  version: "1.0"
+paths:
+  /devices:
+    post:
+      consumes:
+      - application/json
+      description: Create a new smart home device
+      parameters:
+      - description: Device creation data
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/main.DeviceCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Command'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.Response'
+      summary: Create a new device
+      tags:
+      - devices
+  /devices/{device_id}/action:
+    post:
+      consumes:
+      - application/json
+      description: Send a command to a specific device
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Device command
+        in: body
+        name: command
+        required: true
+        schema:
+          $ref: '#/definitions/main.DeviceAction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Command'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.Response'
+      summary: Send command to device
+      tags:
+      - devices
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -20,14 +20,15 @@ System(SmartHome, SmartHome, Умный дом)
 Container_Boundary(SmartHome, SmartHome) {
   Container(DevicesCommandAPI, DevicesCommandAPI, "Golang", "Управление устройствами")
   Container(TelemetryAPI, TelemetryAPI, "Golang", "Мониторинг устройств")
-  Container(UserAPI, UserAPI, "Python, FactAPI", "Управление юзерами, домами, авторизация")
+  Container(UserAPI, UserAPI, "Python, FastAPI", "Управление юзерами, домами, авторизация")
   Container(DevicesCommandConsumer, DevicesCommandConsumer, "Golang", "Исполнение команд")
 
   ContainerQueue(CommandQueue, CommandQueue, Kafka)
   ContainerDb(DevicesDB, DevicesDB, Postgresql, devices)
   ContainerDb(UsersDB, UsersDB, Postgresql, users)
 
-  Rel(DevicesCommandAPI, CommandQueue, "Команда")
+  Rel(TelemetryAPI, CommandQueue, "Телеметрия", Kafka)
+  Rel(DevicesCommandAPI, CommandQueue, "Команды", Kafka)
   Rel(CommandQueue, DevicesCommandConsumer, "Команда")
 
   Rel(UserAPI, UsersDB, Сохраняет/читает данные, JDBC)

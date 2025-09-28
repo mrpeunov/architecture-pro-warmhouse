@@ -14,7 +14,7 @@ Container_Boundary(DevicesCommandConsumer, "TelemetryAPP") {
 
 Container(DevicesCommandConsumerContainer, "Web Application", "Golang") {
   Component(DevicesCommandController, "DevicesCommandController", "Handles telemetries")
-  Component(ServiceLayer, "Service Layer", "Бизнес логика")
+
 
   Component(ProviderFactory, "ProviderFactory", "Отдаёт фасад по типу устройства")
   Component(WarmHouseFacade, "WarmHouseFacade", Обработка интерфейса взаимодействия с теплыми домами)
@@ -28,11 +28,10 @@ Rel(DeviceCommandQueue, DevicesCommandController,  "Отправка коман�
 Component_Ext(WarmHouseProvider, Теплый дом, Golang, Система управления теплыми домами)
 Component_Ext(OtherProvider, Теплый дом, "Golang", Система управления теплыми домами)
 
-Rel(DevicesCommandController, ServiceLayer, "Вызов бизнес логики")
-Rel(ServiceLayer, RepositoryLayer, "Проверка девайсов")
-Rel(ServiceLayer, ProviderFactory, "Получение фасада")
-Rel(ServiceLayer, WarmHouseFacade, "Получение телеметрии")
-Rel(ServiceLayer, OtherProviderFacade, "Получение телеметрии")
+Rel(DevicesCommandController, RepositoryLayer, "Проверка девайсов")
+Rel(DevicesCommandController, ProviderFactory, "Получение фасада")
+Rel(DevicesCommandController, WarmHouseFacade, "Получение телеметрии")
+Rel(DevicesCommandController, OtherProviderFacade, "Получение телеметрии")
 Rel(RepositoryLayer, Database, "Чтение данных")
 Rel(WarmHouseFacade, WarmHouseProvider, "HTTP")
 Rel(OtherProviderFacade, OtherProvider, "API/Webhook/AMQP/RPC/SOAP")

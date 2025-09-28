@@ -1,6 +1,37 @@
 version: '3.8'
 
 services:
+  kafka:
+    image: 'bitnami/kafka:3.4.1'
+    hostname: kafka
+    platform: linux/x86_64
+    ports:
+      - "29092:29092"
+    env_file:
+      - .env.compose.kafka
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/9092" ]
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    networks:
+      - smarthome-network
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    hostname: kafka-ui
+    ports:
+      - "8888:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_CLUSTERS_0_NAME=kraft
+    depends_on:
+      kafka:
+        condition: service_started
+    networks:
+      - smarthome-network
+
   postgres:
     image: postgres:16-alpine
     container_name: smarthome-postgres
