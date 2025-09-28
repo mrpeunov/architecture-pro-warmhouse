@@ -140,6 +140,7 @@
 -добавить авторизацию в devices_command_api
 -сделать telemetry api
 -сделать консюмер
+-outer id
 
 
 Сделано:

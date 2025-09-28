@@ -1,0 +1,17 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS devices (
+  device_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  outer_id  VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  device_type VARCHAR(50) NOT NULL,
+  home_id UUID NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS telemetries (
+   telemetry_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+   device_id UUID NOT NULL REFERENCES devices(device_id) ON DELETE CASCADE,
+   value DECIMAL(10,2) NOT NULL,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

@@ -52,7 +52,7 @@ func (h *DeviceHandler) CreateDevice(c *gin.Context) {
 			"device_type": string(deviceCreate.DeviceType),
 			"name":        deviceCreate.Name,
 			"home_id":     deviceCreate.HomeID.String(),
-			"created_at":  time.Now().Format("2006-01-02 15:04:05"),
+			"created_at":  time.Now().Format("2006-01-02T15:04:05Z07:00"),
 		},
 	}
 

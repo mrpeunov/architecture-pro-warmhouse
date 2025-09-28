@@ -20,7 +20,7 @@ func initKafka() {
 	kafkaWriter = &writer
 }
 
-func sendKafkaMessage(topic string, message []byte) err {
+func sendKafkaMessage(topic string, message []byte) error {
 	kafkaMessage := kafka.Message{
 		Topic: topic,
 		Value: message,
