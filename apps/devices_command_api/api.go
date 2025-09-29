@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"maps"
 	"net/http"
 	"time"
@@ -90,12 +91,14 @@ func (h *DeviceHandler) CreateDevice(c *gin.Context) {
 
 	commandData, err := json.Marshal(command)
 	if err != nil {
+		log.Printf(err.Error())
 		c.JSON(http.StatusInternalServerError, Response{Message: "Failed to marshal command"})
 		return
 	}
 
 	err = sendKafkaMessage("commands", commandData)
 	if err != nil {
+		log.Printf(err.Error())
 		c.JSON(http.StatusInternalServerError, Response{Message: "Can't send command"})
 		return
 	}
@@ -188,12 +191,14 @@ func (h *DeviceHandler) SendAction(c *gin.Context) {
 
 	commandData, err := json.Marshal(command)
 	if err != nil {
+		log.Printf(err.Error())
 		c.JSON(http.StatusInternalServerError, Response{Message: "Can't send command"})
 		return
 	}
 
 	err = sendKafkaMessage("commands", commandData)
 	if err != nil {
+		log.Printf(err.Error())
 		c.JSON(http.StatusInternalServerError, Response{Message: "Can't send command"})
 		return
 	}

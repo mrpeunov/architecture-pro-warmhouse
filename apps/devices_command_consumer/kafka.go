@@ -1,27 +1,16 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/segmentio/kafka-go"
 )
 
-var kafkaWriter *kafka.Writer
 var kafkaConn *kafka.Conn
 
-func initKafka() {
+func initKafkaConnection() {
 	brokerAddress := "kafka:29092"
-
-	writer := kafka.Writer{
-		Addr:         kafka.TCP(brokerAddress),
-		Balancer:     &kafka.Hash{},
-		BatchTimeout: 10 * time.Millisecond,
-	}
-
-	kafkaWriter = &writer
 
 	conn, err := kafka.Dial("tcp", brokerAddress)
 	if err != nil {
@@ -57,11 +46,10 @@ func createTopicIfNotExists(topicName string) error {
 	return nil
 }
 
-func sendKafkaMessage(topic string, message []byte) error {
-	kafkaMessage := kafka.Message{
-		Topic: topic,
-		Value: message,
-	}
-
-	return kafkaWriter.WriteMessages(context.Background(), kafkaMessage)
+func createKafkaReader(brokers []string, topic string, groupID string) *kafka.Reader {
+	return kafka.NewReader(kafka.ReaderConfig{
+		Brokers: brokers,
+		Topic:   topic,
+		GroupID: groupID,
+	})
 }

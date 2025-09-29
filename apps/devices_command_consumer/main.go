@@ -7,13 +7,17 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/segmentio/kafka-go"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	// Initialize Kafka connection and ensure topics exist
+	initKafkaConnection()
+	if kafkaConn != nil {
+		defer kafkaConn.Close()
+	}
 
 	db, err := initDB()
 	if err != nil {
@@ -28,11 +32,7 @@ func main() {
 
 	commandController := NewCommandController(deviceRepo, telemetryRepo, warmHouseProvider)
 
-	kafkaReader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers: []string{"kafka:29092"},
-		Topic:   "commands",
-		GroupID: "devices_command_consumer",
-	})
+	kafkaReader := createKafkaReader([]string{"kafka:29092"}, "commands", "devices_command_consumer")
 	defer kafkaReader.Close()
 
 	// Start consuming messages

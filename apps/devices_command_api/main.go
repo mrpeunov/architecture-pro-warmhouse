@@ -26,6 +26,9 @@ import (
 func main() {
 	initKafka()
 	defer kafkaWriter.Close()
+	if kafkaConn != nil {
+		defer kafkaConn.Close()
+	}
 
 	router := gin.Default()
 
