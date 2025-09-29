@@ -8,7 +8,7 @@ import (
 )
 
 func initDB() (*sql.DB, error) {
-	connStr := getEnv("DATABASE_URL", "user=postgres password=postgres dbname=devicesdb sslmode=disable port=5432")
+	connStr := getEnv("DATABASE_URL", "user=postgres password=postgres dbname=devicedb sslmode=disable port=5432")
 
 	// Open database connection
 	db, err := sql.Open("postgres", connStr)

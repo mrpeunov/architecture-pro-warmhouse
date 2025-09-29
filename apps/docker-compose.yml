@@ -50,7 +50,26 @@ services:
       start_period: 10s
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./smart_home/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  app:
+    build:
+      context: ./smart_home
+      dockerfile: Dockerfile
+    container_name: smarthome-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      temperature-api:
+        condition: service_started
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
+      - TEMPERATURE_API_URL=http://temperature-api:8081
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
 
   temperature-api:
     build:
@@ -69,22 +88,65 @@ services:
     networks:
       - smarthome-network
 
-  app:
+  devices-command-api:
     build:
-      context: ./smart_home
+      context: ./devices_command_api
       dockerfile: Dockerfile
-    container_name: smarthome-app
+    container_name: devices-command-api
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - smarthome-network
+
+  telemetry-api:
+    build:
+      context: ./telemetry_api
+      dockerfile: Dockerfile
+    container_name: telemetry-api
+    ports:
+      - "8083:8083"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - smarthome-network
+
+  devices-command-consumer:
+    build:
+      context: ./devices_command_consumer
+      dockerfile: Dockerfile
+    container_name: devices-command-consumer
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    networks:
+      - smarthome-network
+
+  users-api:
+    build:
+      context: ./users-api
+      dockerfile: Dockerfile
+    container_name: users-api
+    ports:
+      - "8084:8084"
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
-      temperature-api:
-        condition: service_started
-    environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
-      - TEMPERATURE_API_URL=http://temperature-api:8081
-    ports:
-      - "8080:8080"
-    restart: unless-stopped
     networks:
       - smarthome-network
 

@@ -24,7 +24,7 @@ Container_Boundary(SmartHome, SmartHome) {
   Container(DevicesCommandConsumer, DevicesCommandConsumer, "Golang", "Исполнение команд")
 
   ContainerQueue(CommandQueue, CommandQueue, Kafka)
-  ContainerDb(DevicesDB, DevicesDB, Postgresql, devices)
+  ContainerDb(DeviceDB, DeviceDB, Postgresql, devices)
   ContainerDb(UsersDB, UsersDB, Postgresql, users)
 
   Rel(TelemetryAPI, CommandQueue, "Телеметрия", Kafka)
@@ -33,8 +33,8 @@ Container_Boundary(SmartHome, SmartHome) {
 
   Rel(UserAPI, UsersDB, Сохраняет/читает данные, JDBC)
 
-  Rel(DevicesCommandConsumer, DevicesDB, Сохраняет/читает данные, JDBC)
-  Rel(TelemetryAPI, DevicesDB, Сохраняет/читает данные, JDBC)
+  Rel(DevicesCommandConsumer, DeviceDB, Сохраняет/читает данные, JDBC)
+  Rel(TelemetryAPI, DeviceDB, Сохраняет/читает данные, JDBC)
 }
 
 Rel(SmartHomeFront, DevicesCommandAPI, Управление устройствами, Rest API)

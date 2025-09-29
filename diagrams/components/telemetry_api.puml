@@ -7,7 +7,7 @@ top to bottom direction
 
 Container_Boundary(TelemetryAPI, "TelemetryAPI") {
   Container(TelemetryAPIContainer, "TelemetryAPI", "Golang", "Обработка запросов пользователя")
-  ContainerDb(Database, "Database", "PostgreSQL", "DevicesDB")
+  ContainerDb(Database, "Database", "PostgreSQL", "DeviceDB")
 }
 
 Container(TelemetryAPIContainer, "Web Application", "Golang") {

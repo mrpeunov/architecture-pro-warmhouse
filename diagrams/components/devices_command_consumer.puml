@@ -9,7 +9,7 @@ ComponentQueue_Ext(DeviceCommandQueue, Очередь команд, Kafka)
 
 Container_Boundary(DevicesCommandConsumer, "TelemetryAPP") {
   Container(DevicesCommandConsumerContainer, "DevicesCommandConsumer", "Golang", "Обработка команд из очереди")
-  ContainerDb(Database, "Database", "PostgreSQL", "DevicesDB")
+  ContainerDb(Database, "Database", "PostgreSQL", "DeviceDB")
 }
 
 Container(DevicesCommandConsumerContainer, "Web Application", "Golang") {

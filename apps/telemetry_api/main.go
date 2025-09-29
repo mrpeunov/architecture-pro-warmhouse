@@ -49,6 +49,13 @@ func main() {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	// Health check endpoint
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "ok",
+		})
+	})
+
 	apiRoutes := router.Group("/api/v1")
 	{
 		apiHandler.RegisterRoutes(apiRoutes)
