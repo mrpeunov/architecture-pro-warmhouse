@@ -10,7 +10,17 @@ import (
 )
 
 func initDB() (*sql.DB, error) {
-	connStr := getEnv("DATABASE_URL", "user=postgres password=postgres dbname=devicedb sslmode=disable port=5432")
+	// Get database connection parameters from environment variables
+	dbUser := getEnv("DB_USER", "postgres")
+	dbPassword := getEnv("DB_PASSWORD", "postgres")
+	dbName := getEnv("DB_NAME", "devicedb")
+	dbHost := getEnv("DB_HOST", "localhost")
+	dbPort := getEnv("DB_PORT", "5432")
+	dbSSLMode := getEnv("DB_SSLMODE", "disable")
+
+	// Build connection string from individual parameters
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=%s",
+		dbUser, dbPassword, dbName, dbHost, dbPort, dbSSLMode)
 
 	// Open database connection
 	db, err := sql.Open("postgres", connStr)

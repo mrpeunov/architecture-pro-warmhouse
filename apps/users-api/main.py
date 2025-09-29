@@ -8,7 +8,7 @@ from typing import List
 import os
 
 from models.user import UserRequest, UserResponse, LoginRequest, AuthToken
-from models.home import HomeRequest, HomeResponse
+from models.home import HomeRequest, HomeResponse, ListHomeResponse
 from controllers.auth_controller import AuthController
 from controllers.home_controller import HomeController
 from database.connection import init_database, close_database, get_pool
@@ -79,7 +79,7 @@ async def create_home(home_data: HomeRequest, current_user_email: str = Depends(
         return await home_controller.create_home(home_data, current_user_email)
 
 
-@app.get("/homes", response_model=List[HomeResponse])
+@app.get("/homes", response_model=List[ListHomeResponse])
 async def get_user_homes(current_user_email: str = Depends(get_current_user_email)):
     """Get homes for a specific user"""
     pool = await get_pool()

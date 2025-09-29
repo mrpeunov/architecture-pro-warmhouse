@@ -22,3 +22,9 @@ class HomeResponse(BaseModel):
     address: str
     created_at: datetime
     auth_token: AuthToken
+
+
+class ListHomeResponse(BaseModel):
+    home_id: UUID
+    address: str
+    created_at: datetime

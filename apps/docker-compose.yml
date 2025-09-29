@@ -113,6 +113,16 @@ services:
     ports:
       - "8083:8083"
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=devicedb
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_SSLMODE=disable
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8083/health" ]
       interval: 30s
@@ -133,6 +143,13 @@ services:
         condition: service_started
       postgres:
         condition: service_healthy
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=devicedb
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_SSLMODE=disable
     networks:
       - smarthome-network
 
@@ -147,6 +164,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=userdb
+      - DB_HOST=postgres
+      - DB_PORT=5432
     networks:
       - smarthome-network
 

@@ -29,7 +29,7 @@ func main() {
 	commandController := NewCommandController(deviceRepo, telemetryRepo, warmHouseProvider)
 
 	kafkaReader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers: []string{"localhost:29092"},
+		Brokers: []string{"kafka:29092"},
 		Topic:   "commands",
 		GroupID: "devices_command_consumer",
 	})

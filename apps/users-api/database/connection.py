@@ -2,7 +2,18 @@ import asyncpg
 import os
 from typing import Optional
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/userdb")
+
+def build_database_url() -> str:
+    """Build database URL from individual environment variables"""
+    db_user = os.getenv("DB_USER", "postgres")
+    db_password = os.getenv("DB_PASSWORD", "postgres")
+    db_host = os.getenv("DB_HOST", "localhost")
+    db_port = os.getenv("DB_PORT", "5432")
+    db_name = os.getenv("DB_NAME", "userdb")
+    
+    return f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+
+DATABASE_URL = build_database_url()
 _pool: Optional[asyncpg.Pool] = None
 
 

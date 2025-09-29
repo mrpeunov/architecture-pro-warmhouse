@@ -1,7 +1,7 @@
 import asyncpg
 from fastapi import HTTPException, status
 from typing import List
-from models.home import HomeRequest, HomeResponse
+from models.home import HomeRequest, HomeResponse, ListHomeResponse
 from models.user import AuthToken
 from services import UserService
 from services.home_service import HomeService
@@ -35,18 +35,15 @@ class HomeController:
                 detail="Internal server error"
             )
 
-    async def get_user_homes(self, email: str) -> List[HomeResponse]:
+    async def get_user_homes(self, email: str) -> List[ListHomeResponse]:
         """Get homes for a specific user"""
         try:
             homes = await self.home_service.get_homes(email)
-            user = await self.user_service.get_user_by_email(email)
-            access_token = self.user_service.create_token(user, homes)
             return [
-                HomeResponse(
+                ListHomeResponse(
                     home_id=home.home_id,
                     address=home.address,
                     created_at=home.created_at,
-                    auth_token=AuthToken(access_token=access_token, token_type="Bearer"),
                 )
                 for home in homes
             ]
