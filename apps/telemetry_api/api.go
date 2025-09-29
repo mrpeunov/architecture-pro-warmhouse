@@ -21,6 +21,7 @@ func NewApiHandler(deviceService *DeviceService, telemetryService *TelemetryServ
 
 func (h *ApiHandler) RegisterRoutes(router *gin.RouterGroup) {
 	devices := router.Group("/devices")
+	devices.Use(AuthMiddleware())
 	{
 		devices.GET("", h.GetDevicesByHomeID)
 		devices.GET("/:device_id/telemetry", h.GetLatestTelemetryByDeviceID)
@@ -33,9 +34,12 @@ func (h *ApiHandler) RegisterRoutes(router *gin.RouterGroup) {
 // @Tags devices
 // @Accept json
 // @Produce json
+// @Security ApiKeyAuth
 // @Param home_id query string true "Home ID"
 // @Success 200 {array} models.DeviceResponse
 // @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
 // @Failure 404 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
 // @Router /devices [get]
@@ -46,6 +50,41 @@ func (h *ApiHandler) GetDevicesByHomeID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Error:   "Invalid home ID",
 			Message: "Home ID must be a valid UUID",
+		})
+		return
+	}
+
+	userHomes, exists := c.Get("user_homes")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
+			Error:   "Unauthorized",
+			Message: "User homes not found in context",
+		})
+		return
+	}
+
+	homes, ok := userHomes.([]string)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
+			Error:   "Unauthorized",
+			Message: "Invalid user homes format",
+		})
+		return
+	}
+
+	// Check if user has access to the requested home
+	hasAccess := false
+	for _, home := range homes {
+		if home == homeIDStr {
+			hasAccess = true
+			break
+		}
+	}
+
+	if !hasAccess {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{
+			Error:   "Forbidden",
+			Message: "Access denied to this home",
 		})
 		return
 	}

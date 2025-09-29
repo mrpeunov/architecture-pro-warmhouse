@@ -6,6 +6,7 @@ toolchain go1.24.7
 
 require (
 	github.com/gin-gonic/gin v1.11.0
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/segmentio/kafka-go v0.4.47
 	github.com/swaggo/files v1.0.1

@@ -13,7 +13,7 @@ from controllers.auth_controller import AuthController
 from controllers.home_controller import HomeController
 from database.connection import init_database, close_database, get_pool
 
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here")
+SECRET_KEY = os.getenv("SECRET_KEY", "secret-key")
 ALGORITHM = "HS256"
 
 app = FastAPI(title="Users API", version="1.0.0", debug=True)

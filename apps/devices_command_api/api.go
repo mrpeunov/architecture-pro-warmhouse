@@ -21,6 +21,7 @@ func NewDeviceHandler() *DeviceHandler {
 // RegisterRoutes registers all device routes
 func (h *DeviceHandler) RegisterRoutes(router *gin.RouterGroup) {
 	devices := router.Group("/devices")
+	devices.Use(AuthMiddleware())
 	{
 		devices.POST("", h.CreateDevice)
 		devices.POST("/:device_id/action", h.SendAction)
@@ -33,9 +34,12 @@ func (h *DeviceHandler) RegisterRoutes(router *gin.RouterGroup) {
 // @Tags devices
 // @Accept json
 // @Produce json
+// @Security ApiKeyAuth
 // @Param device body DeviceCreate true "Device creation data"
 // @Success 200 {object} Command
 // @Failure 400 {object} Response
+// @Failure 401 {object} Response
+// @Failure 403 {object} Response
 // @Failure 500 {object} Response
 // @Router /devices [post]
 func (h *DeviceHandler) CreateDevice(c *gin.Context) {
@@ -45,13 +49,41 @@ func (h *DeviceHandler) CreateDevice(c *gin.Context) {
 		return
 	}
 
+	// Check if user has access to the home
+	homeIDStr := deviceCreate.HomeID.String()
+	userHomes, exists := c.Get("user_homes")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, Response{Message: "User homes not found in context"})
+		return
+	}
+
+	homes, ok := userHomes.([]string)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, Response{Message: "Invalid user homes format"})
+		return
+	}
+
+	// Check if user has access to the requested home
+	hasAccess := false
+	for _, home := range homes {
+		if home == homeIDStr {
+			hasAccess = true
+			break
+		}
+	}
+
+	if !hasAccess {
+		c.JSON(http.StatusForbidden, Response{Message: "Access denied to this home"})
+		return
+	}
+
 	command := Command{
 		CommandType: CreateDevice,
 		Params: map[string]string{
 			"device_id":   uuid.New().String(),
 			"device_type": string(deviceCreate.DeviceType),
 			"name":        deviceCreate.Name,
-			"home_id":     deviceCreate.HomeID.String(),
+			"home_id":     homeIDStr,
 			"created_at":  time.Now().Format("2006-01-02T15:04:05Z07:00"),
 		},
 	}
@@ -77,10 +109,14 @@ func (h *DeviceHandler) CreateDevice(c *gin.Context) {
 // @Tags devices
 // @Accept json
 // @Produce json
-// @Param id path string true "Device ID"
+// @Security ApiKeyAuth
+// @Param device_id path string true "Device ID"
+// @Param home_id query string true "Home ID"
 // @Param command body DeviceAction true "Device command"
 // @Success 200 {object} Command
 // @Failure 400 {object} Response
+// @Failure 401 {object} Response
+// @Failure 403 {object} Response
 // @Failure 500 {object} Response
 // @Router /devices/{device_id}/action [post]
 func (h *DeviceHandler) SendAction(c *gin.Context) {
@@ -88,6 +124,46 @@ func (h *DeviceHandler) SendAction(c *gin.Context) {
 	_, err := uuid.Parse(deviceIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{Message: "invalid device ID"})
+		return
+	}
+
+	// Get home_id from query parameters
+	homeIDStr := c.Query("home_id")
+	if homeIDStr == "" {
+		c.JSON(http.StatusBadRequest, Response{Message: "home_id query parameter is required"})
+		return
+	}
+
+	// Validate home_id format
+	_, err = uuid.Parse(homeIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Response{Message: "invalid home_id format"})
+		return
+	}
+
+	// Check if user has access to the home
+	userHomes, exists := c.Get("user_homes")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, Response{Message: "User homes not found in context"})
+		return
+	}
+
+	homes, ok := userHomes.([]string)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, Response{Message: "Invalid user homes format"})
+		return
+	}
+
+	hasAccess := false
+	for _, home := range homes {
+		if home == homeIDStr {
+			hasAccess = true
+			break
+		}
+	}
+
+	if !hasAccess {
+		c.JSON(http.StatusForbidden, Response{Message: "Access denied to this home"})
 		return
 	}
 
@@ -99,6 +175,7 @@ func (h *DeviceHandler) SendAction(c *gin.Context) {
 
 	params := map[string]string{
 		"device_id":  deviceIDStr,
+		"home_id":    homeIDStr,
 		"action":     action.Action,
 		"created_at": time.Now().Format("2006-01-02 15:04:05"),
 	}
