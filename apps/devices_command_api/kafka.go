@@ -13,7 +13,7 @@ var kafkaWriter *kafka.Writer
 var kafkaConn *kafka.Conn
 
 func initKafka() {
-	brokerAddress := "kafka:29092"
+	brokerAddress := "kafka:9092"
 
 	writer := kafka.Writer{
 		Addr:         kafka.TCP(brokerAddress),

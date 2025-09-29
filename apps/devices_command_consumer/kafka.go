@@ -10,7 +10,7 @@ import (
 var kafkaConn *kafka.Conn
 
 func initKafkaConnection() {
-	brokerAddress := "kafka:29092"
+	brokerAddress := "kafka:9092"
 
 	conn, err := kafka.Dial("tcp", brokerAddress)
 	if err != nil {

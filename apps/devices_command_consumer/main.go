@@ -32,7 +32,7 @@ func main() {
 
 	commandController := NewCommandController(deviceRepo, telemetryRepo, warmHouseProvider)
 
-	kafkaReader := createKafkaReader([]string{"kafka:29092"}, "commands", "devices_command_consumer")
+	kafkaReader := createKafkaReader([]string{"kafka:9092"}, "commands", "devices_command_consumer")
 	defer kafkaReader.Close()
 
 	// Start consuming messages
