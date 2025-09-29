@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -36,10 +37,10 @@ type Device struct {
 }
 
 type TelemetryData struct {
-	TelemetryID uuid.UUID `json:"telemetry_id" db:"telemetry_id"`
-	DeviceID    uuid.UUID `json:"device_id" db:"device_id"`
-	Value       float64   `json:"value" db:"value"`
-	CreatedAt   time.Time `json:"created_at" db:"created_at"`
+	TelemetryID uuid.UUID   `json:"telemetry_id" db:"telemetry_id"`
+	DeviceID    uuid.UUID   `json:"device_id" db:"device_id"`
+	Value       json.Number `json:"value" db:"value"`
+	CreatedAt   time.Time   `json:"created_at" db:"created_at"`
 }
 
 type TelemetryCreate struct {

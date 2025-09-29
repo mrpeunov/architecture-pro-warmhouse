@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"telemetry_api/models"
 	"telemetry_api/providers"
+	"time"
 )
 
 type TelemetryService struct {
@@ -47,7 +48,10 @@ func (s *TelemetryService) GetLatestTelemetryByDeviceID(deviceID uuid.UUID) (*mo
 	message := &models.Command{
 		CommandType: models.NewTelemetry,
 		Params: map[string]string{
-			"value": strconv.FormatFloat(telemetry.Value, 'f', -1, 64),
+			"telemetry_id": uuid.New().String(),
+			"value":        strconv.FormatFloat(telemetry.Value, 'f', -1, 64),
+			"device_id":    deviceID.String(),
+			"created_at":   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 		},
 	}
 

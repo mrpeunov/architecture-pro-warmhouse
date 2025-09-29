@@ -107,6 +107,7 @@ func (h *ApiHandler) GetDevicesByHomeID(c *gin.Context) {
 // @Tags telemetry
 // @Accept json
 // @Produce json
+// @Security ApiKeyAuth
 // @Param device_id path string true "Device ID"
 // @Success 200 {object} models.TelemetryResponse
 // @Failure 400 {object} models.ErrorResponse

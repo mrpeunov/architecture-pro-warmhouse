@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/devices": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Retrieve all devices for a specific home",
                 "consumes": [
                     "application/json"
@@ -53,6 +58,18 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -70,6 +87,11 @@ const docTemplate = `{
         },
         "/devices/{device_id}/telemetry": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Retrieve the most recent telemetry data for a specific device",
                 "consumes": [
                     "application/json"

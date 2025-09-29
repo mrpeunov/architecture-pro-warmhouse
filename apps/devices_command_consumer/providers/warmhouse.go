@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -55,7 +56,7 @@ type SensorTurnOnAction struct {
 
 func NewWarmHouseProvider() *WarmHouseProvider {
 	return &WarmHouseProvider{
-		baseURL: getEnv("WARMHOUSE_API_URL", "http://localhost:8080"),
+		baseURL: getEnv("WARMHOUSE_API_URL", "http://app:8080"),
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
@@ -72,6 +73,7 @@ func (w *WarmHouseProvider) Create(device *models.Device) (string, error) {
 
 	jsonData, err := json.Marshal(sensorCreate)
 	if err != nil {
+		log.Printf(err.Error())
 		return "", fmt.Errorf("failed to marshal sensor data: %w", err)
 	}
 
@@ -81,6 +83,7 @@ func (w *WarmHouseProvider) Create(device *models.Device) (string, error) {
 		bytes.NewBuffer(jsonData),
 	)
 	if err != nil {
+		log.Printf(err.Error())
 		return "", fmt.Errorf("failed to create sensor: %w", err)
 	}
 	defer resp.Body.Close()
@@ -89,6 +92,7 @@ func (w *WarmHouseProvider) Create(device *models.Device) (string, error) {
 	var sensor Sensor
 	err = json.Unmarshal(respBody, &sensor)
 	if err != nil {
+		log.Printf(err.Error())
 		return "", fmt.Errorf("failed to unmarshal sensor: %w", err)
 	}
 
@@ -97,7 +101,7 @@ func (w *WarmHouseProvider) Create(device *models.Device) (string, error) {
 		return "", fmt.Errorf("failed to create sensor, status: %d, body: %s", resp.StatusCode, string(body))
 	}
 
-	return string(sensor.ID), nil
+	return strconv.Itoa(sensor.ID), nil
 }
 
 func (w *WarmHouseProvider) SendAction(device *models.Device, data map[string]string) error {

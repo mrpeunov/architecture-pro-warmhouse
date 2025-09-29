@@ -31,7 +31,7 @@ type Sensor struct {
 
 func NewWarmHouseProvider() *WarmHouseProvider {
 	return &WarmHouseProvider{
-		baseURL: getEnv("WARMHOUSE_API_URL", "http://localhost:8080"),
+		baseURL: getEnv("WARMHOUSE_API_URL", "http://app:8080"),
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
