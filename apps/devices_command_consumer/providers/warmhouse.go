@@ -122,7 +122,7 @@ func (w *WarmHouseProvider) SendAction(device *models.Device, data map[string]st
 
 	case "turn_off":
 		update := &SensorUpdate{
-			Value:  0.0,
+			Value:  1.0,
 			Status: "inactive",
 		}
 		return w.UpdateSensorValue(sensorID, update)

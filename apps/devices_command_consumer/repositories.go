@@ -33,13 +33,14 @@ func (r *DeviceRepository) Create(device *models.Device) error {
 
 func (r *DeviceRepository) GetByID(deviceID uuid.UUID) (*models.Device, error) {
 	query := `
-		SELECT device_id, name, device_type, home_id, created_at
+		SELECT device_id, outer_id, name, device_type, home_id, created_at
 		FROM devices
 		WHERE device_id = $1`
 
 	var device models.Device
 	err := r.db.QueryRow(query, deviceID).Scan(
 		&device.DeviceID,
+		&device.OuterID,
 		&device.Name,
 		&device.DeviceType,
 		&device.HomeID,

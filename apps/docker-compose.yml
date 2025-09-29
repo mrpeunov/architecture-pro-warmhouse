@@ -10,9 +10,9 @@ services:
     env_file:
       - .env.compose.kafka
     healthcheck:
-      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/9092" ]
-      start_period: 15s
-      interval: 5s
+      test: ["CMD", "bash", "-c", "kafka-topics.sh --bootstrap-server localhost:9092 --list"]
+      start_period: 30s
+      interval: 10s
       timeout: 10s
       retries: 10
     networks:
@@ -28,7 +28,7 @@ services:
       - KAFKA_CLUSTERS_0_NAME=kraft
     depends_on:
       kafka:
-        condition: service_started
+        condition: service_healthy
     networks:
       - smarthome-network
 
@@ -104,7 +104,7 @@ services:
       start_period: 40s
     depends_on:
       kafka:
-        condition: service_started
+        condition: service_healthy
     networks:
       - smarthome-network
 
@@ -118,7 +118,7 @@ services:
     restart: unless-stopped
     depends_on:
       kafka:
-        condition: service_started
+        condition: service_healthy
       postgres:
         condition: service_healthy
     environment:
@@ -145,7 +145,7 @@ services:
     restart: unless-stopped
     depends_on:
       kafka:
-        condition: service_started
+        condition: service_healthy
       postgres:
         condition: service_healthy
     environment:

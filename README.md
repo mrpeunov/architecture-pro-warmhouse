@@ -152,3 +152,13 @@
 - [ ] Задание 6
 
 ВНЕШНИЙ ID
+
+
+{
+"action": "turn_on",
+"device_id": "5e28f5c8-f5a9-4d27-9827-17b1322060ee",
+"params": {
+"action": "set_temperature",
+"value": "22.2"
+}
+}
