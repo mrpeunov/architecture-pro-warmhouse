@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   kafka:
-    image: 'bitnami/kafka:3.4.1'
+    image: 'bitnamilegacy/kafka:3.4.1'
     hostname: kafka
     platform: linux/x86_64
     ports:
