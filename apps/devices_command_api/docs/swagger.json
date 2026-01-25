@@ -1,0 +1,222 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Devices Command API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8082",
+    "basePath": "/api/v1",
+    "paths": {
+        "/devices": {
+            "post": {
+                "description": "Create a new smart home device",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "devices"
+                ],
+                "summary": "Create a new device",
+                "parameters": [
+                    {
+                        "description": "Device creation data",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.DeviceCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/main.Command"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/devices/{device_id}/action": {
+            "post": {
+                "description": "Send a command to a specific device",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "devices"
+                ],
+                "summary": "Send command to device",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Device command",
+                        "name": "command",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.DeviceAction"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.Command"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.Command": {
+            "type": "object",
+            "required": [
+                "command_type"
+            ],
+            "properties": {
+                "command_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/main.CommandType"
+                        }
+                    ],
+                    "example": "CreateDevice"
+                },
+                "params": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "main.CommandType": {
+            "type": "string",
+            "enum": [
+                "CreateDevice",
+                "SendAction"
+            ],
+            "x-enum-varnames": [
+                "CreateDevice",
+                "SendAction"
+            ]
+        },
+        "main.DeviceAction": {
+            "type": "object",
+            "required": [
+                "action",
+                "device_id"
+            ],
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "example": "turn_on"
+                },
+                "device_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "params": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "main.DeviceCreate": {
+            "type": "object",
+            "required": [
+                "device_type",
+                "home_id",
+                "name"
+            ],
+            "properties": {
+                "device_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/main.DeviceType"
+                        }
+                    ],
+                    "example": "sensor"
+                },
+                "home_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Living Room Temperature Sensor"
+                }
+            }
+        },
+        "main.DeviceType": {
+            "type": "string",
+            "enum": [
+                "sensor",
+                "lighting"
+            ],
+            "x-enum-varnames": [
+                "DeviceTypeSensor",
+                "DeviceTypeLighting"
+            ]
+        },
+        "main.Response": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Command sent"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

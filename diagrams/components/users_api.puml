@@ -1,0 +1,32 @@
+@startuml
+title UsersAPI Component Diagram
+
+top to bottom direction
+
+!include <C4/C4_Component>
+
+Container_Boundary(UsersAPI, "UsersAPI") {
+  Container(UsersAPIContainer, "UsersAPI", "Python", "Обработка запросов пользователей")
+  ContainerDb(Database, "Database", "PostgreSQL", "UsersDB")
+}
+
+Container(UsersAPIContainer, "Web Application", "Python") {
+  Component(AuthController, "AuthController", "Регистрация и авторизация")
+  Component(HomeController, "HomeController", "Создание домов")
+
+  Component(UserService, "Сервис работы с пользователями", "Создание и авторизация пользователей")
+  Component(HomeService, "Сервис работы с домами", "Создание и привязка домов")
+
+  Component(UserRepository, "Репозиторий пользователей", "Управление пользователями")
+  Component(HomeRepository, "Репозиторий домов", "Управление домами")
+ }
+
+Rel(AuthController, UserService, "Вызов бизнеc-логики")
+Rel(HomeController, HomeService, "Вызов бизнеc-логики")
+Rel(HomeService, HomeRepository, "Создание и получение домов")
+Rel(UserService, UserRepository, "Создание и получение пользователей")
+
+Rel(HomeRepository, Database, "Чтение и обновление данных")
+Rel(UserRepository, Database, "Чтение и обновление данных")
+
+@enduml

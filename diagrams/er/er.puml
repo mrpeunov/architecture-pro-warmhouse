@@ -1,0 +1,37 @@
+@startuml
+!theme plain
+
+entity User {
+  * Email
+  --
+  Name
+  Password
+  CreatedAt
+}
+
+entity Home {
+  * HomeId
+  --
+  Address
+  CreatedAt
+}
+
+entity Device {
+  * DeviceId
+  --
+  Name
+  DeviceType
+  CreatedAt
+}
+
+entity TelemetryData {
+  * TelemetryId
+  --
+  CreatedAt
+  Value
+}
+
+User }o--o{ Home
+Home ||--o{ Device
+Device ||--o{ TelemetryData
+@enduml

@@ -1,0 +1,45 @@
+@startuml
+title TelemetryAPI Component Diagram
+
+top to bottom direction
+
+!include <C4/C4_Component>
+
+Container_Boundary(TelemetryAPI, "TelemetryAPI") {
+  Container(TelemetryAPIContainer, "TelemetryAPI", "Golang", "Обработка запросов пользователя")
+  ContainerDb(Database, "Database", "PostgreSQL", "DeviceDB")
+}
+
+Container(TelemetryAPIContainer, "Web Application", "Golang") {
+  Component(TelemetryController, "TelemetryController", "Получение телеметрии")
+  Component(DevicesController, "DevicesController", "Получение устройств")
+
+  Component(TelemetryService, "Telemetry Service", "Получение телеметрии")
+  Component(DevicesService, "Devices Service", "Получение устройств")
+
+  Component(ProviderFactory, "ProviderFactory", "Отдаёт фасад по типу устройства")
+  Component(WarmHouseFacade, "WarmHouseFacade", Обработка интерфейса взаимодействия с теплыми домами)
+  Component(OtherProviderFacade, "OtherProviderFacade", Обработка интерфейса взаимодействия с другим провайдером)
+
+  Component(DevicesRepository, "DevicesRepository", "Доступ к девайсов")
+ }
+
+Component_Ext(WarmHouseProvider, Теплый дом, Golang, Система управления теплыми домами)
+Component_Ext(OtherProvider, Теплый дом, "Golang", Система управления теплыми домами)
+ComponentQueue_Ext(DeviceCommandQueue, Очередь команд, Kafka)
+
+Rel(TelemetryController, TelemetryService, "Вызов бизнеc-логики")
+Rel(TelemetryService, DevicesRepository, "Проверка девайсов")
+Rel(TelemetryService, DeviceCommandQueue, "Телеметрия")
+Rel(TelemetryService, ProviderFactory, "Получение фасада")
+Rel(TelemetryService, WarmHouseFacade, "Получение телеметрии")
+Rel(TelemetryService, OtherProviderFacade, "Получение телеметрии")
+
+Rel(DevicesController, DevicesService, "Вызов бизнеc-логики")
+Rel(DevicesService, DevicesRepository, "Получение устройств")
+
+Rel(DevicesRepository, Database, "Чтение данных")
+Rel(WarmHouseFacade, WarmHouseProvider, "HTTP")
+Rel(OtherProviderFacade, OtherProvider, "API/Webhook/AMQP/RPC/SOAP")
+
+@enduml

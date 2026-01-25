@@ -1,0 +1,61 @@
+@startuml
+title Smart Home To Be Container Diagram
+
+top to bottom direction
+
+!include <C4/C4_Container>
+
+Person(user, User, Пользователь)
+
+System(Front, Front, Frontend)
+
+Container_Boundary(Front, Front){
+    Container(SmartHomeFront, SmartHomeFront, "JS, React", Интерфейс управления)
+}
+Rel(user, SmartHomeFront, "Управление")
+
+
+System(SmartHome, SmartHome, Умный дом)
+
+Container_Boundary(SmartHome, SmartHome) {
+  Container(DevicesCommandAPI, DevicesCommandAPI, "Golang", "Управление устройствами")
+  Container(TelemetryAPI, TelemetryAPI, "Golang", "Мониторинг устройств")
+  Container(UserAPI, UserAPI, "Python, FastAPI", "Управление юзерами, домами, авторизация")
+  Container(DevicesCommandConsumer, DevicesCommandConsumer, "Golang", "Исполнение команд")
+
+  ContainerQueue(CommandQueue, CommandQueue, Kafka)
+  ContainerDb(DeviceDB, DeviceDB, Postgresql, devices)
+  ContainerDb(UsersDB, UsersDB, Postgresql, users)
+
+  Rel(TelemetryAPI, CommandQueue, "Телеметрия", Kafka)
+  Rel(DevicesCommandAPI, CommandQueue, "Команды", Kafka)
+  Rel(CommandQueue, DevicesCommandConsumer, "Команда")
+
+  Rel(UserAPI, UsersDB, Сохраняет/читает данные, JDBC)
+
+  Rel(DevicesCommandConsumer, DeviceDB, Сохраняет/читает данные, JDBC)
+  Rel(TelemetryAPI, DeviceDB, Сохраняет/читает данные, JDBC)
+}
+
+Rel(SmartHomeFront, DevicesCommandAPI, Управление устройствами, Rest API)
+Rel(SmartHomeFront, TelemetryAPI, Получение телеметрии, Rest API)
+Rel(SmartHomeFront, UserAPI, Получение JWT, управление домами, Rest API)
+
+System_Ext(DeviceProviders, DeviceProviders, "Поставщики систем умных устройств")
+Container_Boundary(DeviceProviders, DeviceProviders){
+    Container(MonolithSmartHome, MonolithSmartHome, Golang, "Старое приложение smarthouse для управления системами отопления" )
+    Container(OtherProvider, OtherProvider, "C++, Python", "Провайдер для любой другой системы")
+}
+
+Rel(TelemetryAPI, MonolithSmartHome, "Адаптер", RestAPI)
+Rel(DevicesCommandConsumer, MonolithSmartHome, "Адаптер", RestAPI)
+
+Rel(TelemetryAPI, OtherProvider, "Адаптер", RestAPI)
+Rel(DevicesCommandConsumer, OtherProvider, "Адаптер", RestAPI)
+
+
+
+
+
+
+@enduml

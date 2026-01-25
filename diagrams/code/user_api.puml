@@ -1,0 +1,82 @@
+
+@startuml
+title UsersAPI Class Diagram
+
+class AuthController {
+  + Register(userData: UserRequest): UserResponse
+  + Login(credentials: LoginRequest): AuthToken
+}
+
+class HomeController {
+  + CreateHome(homeData: HomeRequest): HomeResponse
+  + GetUserHomes(userId: int): List<Home>
+}
+
+class UserService {
+  + CreateUser(userData: User): User
+  + Authenticate(email: string, password: string): User
+  + GetUserByEmail(email: string): User
+}
+
+class HomeService {
+  + CreateHome(homeData: Home): Home
+  + GetHomesByUserId(userId: uuid): List<Home>
+  + AddUserToHome(homeId: uuid, email: int): bool
+}
+
+class UserRepository {
+  + Create(user: User): User
+  + FindByEmail(email: string): User
+}
+
+class HomeRepository {
+  + Create(home: Home): Home
+  + FindByUserId(userId: int): List<Home>
+  + AddUserToHome(email: string, homeId: Uuid)
+}
+
+class User {
+  + Email: string
+  + Password: string
+  + Name: string
+  + CreatedAt: datetime
+}
+
+class Home {
+  + HomeId: int
+  + Address: string
+  + CreatedAt: datetime
+}
+
+class UserHome {
+   + Email: string
+   + HomeId: uuid
+}
+
+class Database {
+  + Users: Table<User>
+  + Homes: Table<Home>
+  + UserHomes: Table<UserHome>
+}
+
+' Связи между классами
+AuthController --> UserService
+HomeController --> HomeService
+
+UserService --> UserRepository
+HomeService --> HomeRepository
+
+UserRepository --> Database
+HomeRepository --> Database
+
+
+Database --> User
+Database --> Home
+
+
+
+' Агрегация/композиция
+UserHome "1" *-- "*" User
+UserHome "1" *-- "*" Home
+
+@enduml
